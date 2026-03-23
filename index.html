@@ -1107,6 +1107,25 @@ window.render = function(){
   autoSave();
 };
 
+   /* ════════════════════════════════════
+   防禦機制：阻擋一般使用者的右鍵與快捷鍵下載
+   ════════════════════════════════════ */
+// 1. 鎖定滑鼠右鍵
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// 2. 鎖定常見的鍵盤快捷鍵
+document.addEventListener('keydown', function(e) {
+  // 阻擋 F12 (開發者工具)
+  if(e.keyCode === 123) { e.preventDefault(); return false; }
+  // 阻擋 Ctrl+S 或 Cmd+S (另存網頁)
+  if((e.ctrlKey || e.metaKey) && e.keyCode === 83) { e.preventDefault(); return false; }
+  // 阻擋 Ctrl+U 或 Cmd+U (檢視網頁原始碼)
+  if((e.ctrlKey || e.metaKey) && e.keyCode === 85) { e.preventDefault(); return false; }
+  // 阻擋 Ctrl+P 或 Cmd+P (防止直接列印整個網頁原始碼或版面，只允許用我們做的列印按鈕)
+  if((e.ctrlKey || e.metaKey) && e.keyCode === 80) { e.preventDefault(); return false; }
+  // 阻擋 Ctrl+Shift+I / J / C (開發者工具快捷鍵)
+  if(e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) { e.preventDefault(); return false; }
+});
 </script>
 </body>
 </html>
