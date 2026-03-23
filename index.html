@@ -635,29 +635,37 @@ function render(){
           const msDate=t.dateS?fmtDateShort(t.dateS):'';
           h+=`<div class="ms-diamond" style="background:var(--ms)" title="${t.name}（${msDate}）"></div>`;
           if(msDate) h+=`<div class="ms-date">${msDate}</div>`;
-        } else if(!t.ms&&wi>=t.start&&wi<t.end){
-          const isVF=!barDone;
-          const isVL=vi===visWks.length-1||visWks[vi+1]>=t.end;
-          const ds=t.dateS?fmtDateShort(t.dateS):'';
-          const de=t.dateE?fmtDateShort(t.dateE):'';
-          if(isVF){
-            barDone=true;
-            const lp=1;
-            const wPct=`calc(${taskVisSpan * 100}% - 1px)`;
-            const impOutline=t.imp?`outline:1.5px solid var(--imp-outline); outline-offset: -1.5px;`:'';
-            const showName=taskVisSpan>=8;
-            const showDates=taskVisSpan>=3;
-            let inner='';
-            if(showDates&&ds) inner+=`<span style="font-family:var(--font-mono);font-size:8px;font-weight:700;flex-shrink:0;opacity:.9">${ds}</span>`;
-            if(showName) inner+=`<span class="bar-name">${t.name}</span>`;
-            else inner+=`<span style="flex:1"></span>`;
-            if(showDates&&isVL&&de) inner+=`<span style="font-family:var(--font-mono);font-size:8px;font-weight:700;flex-shrink:0;opacity:.9">${de}</span>`;
-            h+=`<div class="bar" style="left:${lp}px;width:${wPct};background:${st.bg};color:${st.tx};${impOutline}" title="${t.name}（${ds||'?'}─${de||'?'}）">${inner}</div>`;
+} else if(!t.ms&&wi>=t.start&&wi<t.end){
+            const isVF=!barDone;
+            const isVL=vi===visWks.length-1||visWks[vi+1]>=t.end;
+            const ds=t.dateS?fmtDateShort(t.dateS):'';
+            const de=t.dateE?fmtDateShort(t.dateE):'';
+            const showDates=taskVisSpan>=3; // 超過3週才顯示日期
+
+            if(isVF){
+              barDone=true;
+              const lp=1;
+              /* 1. 完美的寬度演算法：補回每跨一格被吃掉的 1px 虛線邊界 */
+              const wPct=`calc(${taskVisSpan * 100}% + ${taskVisSpan - 1}px)`;
+              const impOutline=t.imp?`outline:1.5px solid var(--imp-outline); outline-offset: -1.5px;`:'';
+              const showName=taskVisSpan>=8;
+
+              /* 2. 顏色條內部現在「只放任務名稱」，不放日期了 */
+              let inner='';
+              if(showName) inner+=`<span class="bar-name">${t.name}</span>`;
+              h+=`<div class="bar" style="left:${lp}px;width:${wPct};background:${st.bg};color:${st.tx};${impOutline}" title="${t.name}（${ds||'?'}─${de||'?'}）">${inner}</div>`;
+
+              /* 3. 起始日期：像磁鐵一樣，獨立釘在第一格的左邊 */
+              if(showDates&&ds){
+                h+=`<div style="position:absolute;top:50%;transform:translateY(-50%);left:4px;height:18px;display:flex;align-items:center;font-family:var(--font-mono);font-size:8px;font-weight:700;color:${st.tx};pointer-events:none;z-index:3;opacity:.9">${ds}</div>`;
+              }
+            }
+            
+            /* 4. 結束日期：像磁鐵一樣，獨立釘在最後一格的右邊 */
+            if(isVL&&de&&showDates){
+              h+=`<div style="position:absolute;top:50%;transform:translateY(-50%);right:4px;height:18px;display:flex;align-items:center;font-family:var(--font-mono);font-size:8px;font-weight:700;color:${st.tx};pointer-events:none;z-index:3;opacity:.9">${de}</div>`;
+            }
           }
-          if(isVL&&de&&!isVF&&taskVisSpan>=3){
-            h+=`<div style="position:absolute;top:50%;transform:translateY(-50%);right:3px;height:18px;display:flex;align-items:center;font-family:var(--font-mono);font-size:8px;font-weight:700;color:${st.tx};pointer-events:none;z-index:3;opacity:.9">${de}</div>`;
-          }
-        }
         if(wi===TODAY_WK) h+=`<div class="today-line" style="left:${Math.round(TODAY_F*100)}%"></div>`;
         h+='</td>';
       }
