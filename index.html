@@ -145,6 +145,33 @@ td.td-task{width:160px;min-width:160px;position:relative;left:0;background:var(-
   padding-left:10px;font-weight:500;cursor:pointer;border-right:1px solid #111;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 td.td-task:hover{color:var(--active-bg);text-decoration:underline} /* hover 顏色改深藍 */
+/* 任務排序小箭頭：平時隱藏，滑鼠移入才顯示 */
+.task-sort-btns {
+  display: inline-flex;
+  flex-direction: column;
+  margin-right: 6px;
+  vertical-align: middle;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+td.td-task:hover .task-sort-btns {
+  opacity: 0.5;
+}
+.task-sort-btns:hover {
+  opacity: 1 !important;
+}
+.sort-btn {
+  font-size: 10px;
+  line-height: 0.8;
+  cursor: pointer;
+  color: var(--text);
+  padding: 1px 2px;
+  user-select: none;
+}
+.sort-btn:hover { color: var(--active-bg); }
+@media print {
+  .task-sort-btns { display: none !important; }
+}
 tbody tr:hover td.td-task,tbody tr:hover td.td-unit{background:#F3F6F9}
 td.td-unit{width:72px;min-width:72px;position:relative;left:0;background:var(--bg);z-index:2;
   padding-left:8px;color:var(--text2);font-size:10px;
@@ -730,7 +757,13 @@ function render(){
     gt.forEach(t=>{
       const st=SC[t.status];
       h+=`<tr data-id="${t.id}">`;
-      h+=`<td class="td-task" onclick="openEdit(${t.id})" title="${t.name}">${t.name}</td>`;
+      h += `<td class="td-task" title="${t.name}">
+  <span class="task-sort-btns no-print">
+    <span class="sort-btn" onclick="moveTask(event, ${t.id}, -1)">▲</span>
+    <span class="sort-btn" onclick="moveTask(event, ${t.id}, 1)">▼</span>
+  </span>
+  <span onclick="openEdit(${t.id})">${t.name}</span>
+</td>`;
       h+=`<td class="td-unit" title="${t.unit||''}">${t.unit||'—'}</td>`;
       const taskVis=visWks.filter(wi=>wi>=t.start&&wi<t.end);
       const taskVisSpan=taskVis.length;
@@ -931,6 +964,23 @@ function moveGrp(i,dir){
   if(j<0||j>=groups.length) return;
   [groups[i],groups[j]]=[groups[j],groups[i]];
   renderGrpList();
+}
+/* ════════════════════════════════════
+   任務排序邏輯 (限同群組內移動)
+   ════════════════════════════════════ */
+function moveTask(e, id, dir) {
+  e.stopPropagation();
+  const idx = tasks.findIndex(t => t.id === id);
+  if (idx === -1) return;
+  const targetGrp = tasks[idx].grp;
+  const grpTasks = tasks.filter(t => t.grp === targetGrp);
+  const inGrpIdx = grpTasks.findIndex(t => t.id === id);
+  if (dir === -1 && inGrpIdx === 0) return;
+  if (dir === 1 && inGrpIdx === grpTasks.length - 1) return;
+  const neighbor = grpTasks[inGrpIdx + dir];
+  const neighborIdx = tasks.findIndex(t => t.id === neighbor.id);
+  [tasks[idx], tasks[neighborIdx]] = [tasks[neighborIdx], tasks[idx]];
+  render();
 }
 function addGrp(){
   const name=document.getElementById('newGrpName').value.trim();
