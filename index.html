@@ -295,7 +295,7 @@ tr.grp-row td{background:var(--grp-bg);font-weight:700;color:var(--grp-tx);font-
     </div>
     <div class="notes-body" id="notesBody"></div>
     <div class="notes-copy-row">
-      <span id="copyText">COPYRIGHT &copy; 2026 JEN-YUAN HSUEH ARCHITECTS</span>
+      <span id="copyText">COPYRIGHT &copy; 2026 JEN-YUAN HSUEH ARCHITECTS │ 薛仁淵建築師事務所 開發</span>
     </div>
   </div>
 
@@ -579,7 +579,8 @@ function render(){
     if (!_c) throw 'err'; // 如果盜用者把版權這行 HTML 刪掉，直接自毀！
     
     // 用亂碼還原你的名字，並強制寫入畫面 (盜用者在 HTML 怎麼改都會被蓋掉)
-    _c.innerHTML = 'COPYRIGHT &copy; 2026 ' + atob('SkVOLVlVQU4gSFNVRUggQVJDSElURUNUUw==');
+    // 用亂碼還原你的名字，並強制寫入畫面
+    _c.innerHTML = 'COPYRIGHT &copy; 2026 ' + atob('SkVOLVlVQU4gSFNVRUggQVJDSElURUNUUw==') + ' │ 薛仁淵建築師事務所 開發';
   } catch(e) { 
     document.body.innerHTML = '<h2 style="padding:50px;text-align:center;font-family:sans-serif;color:#C53030;">SYSTEM ERROR<br><span style="font-size:14px;color:#333;">Unauthorized HTML Source Modification</span></h2>';
     return; 
