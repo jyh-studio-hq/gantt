@@ -115,6 +115,13 @@ th.lny-col{background:var(--lny-bg) !important;color:var(--lny-tx);font-weight:7
 td.lny-col{background:var(--lny-bg) !important;border-right:1px dashed var(--lny-br) !important;}
 tbody tr:hover td.lny-col{background:#FFEBEB !important;}
 td.td-wk:hover::after{content:'';position:absolute;inset:1px;border:1px solid rgba(0,0,0,0.2);pointer-events:none}
+/* ── 凍結窗格邊框修復 (解決滾動時垂直格線消失) ── */
+@media screen {
+  th.th-task, th.th-unit, td.td-task, td.td-unit {
+    border-right: none !important;
+    box-shadow: inset -1px 0 0 0 #111 !important;
+  }
+}   
 
 .bar{height:18px; border-radius:0 !important; position:absolute;top:50%;transform:translateY(-50%); display:flex;align-items:center;padding:0 6px; font-size:10px;font-weight:700; white-space:nowrap;overflow:hidden;pointer-events:none; border-width:1.5px;border-style:solid; border-color:#111 !important; box-shadow: 2px 2px 0px rgba(0,0,0,0.15); font-family: var(--font); z-index: 2;}
 .bar-fl-date{position:absolute;top:0px; font-size:8px;font-weight:700;white-space:nowrap; pointer-events:none;z-index:3;line-height:1; font-family: var(--font-mono);}
